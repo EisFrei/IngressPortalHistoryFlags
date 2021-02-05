@@ -1,8 +1,8 @@
 // ==UserScript==
 // @id portalHistoryFlags
 // @name IITC Plugin: Portal History Flags
-// @category Layers
-// @version 0.0.1
+// @category Layer
+// @version 0.0.2
 // @namespace	https://github.com/EisFrei/IngressPortalHistoryFlags
 // @downloadURL	https://github.com/EisFrei/IngressPortalHistoryFlags/raw/master/portalHistoryFlags.user.js
 // @homepageURL	https://github.com/EisFrei/IngressPortalHistoryFlags
@@ -28,7 +28,7 @@ function wrapper(plugin_info) {
 	plugin_info.buildName = "PortalHistoryFlags";
 
 	// Datetime-derived version of the plugin
-	plugin_info.dateTimeVersion = "202102052258";
+	plugin_info.dateTimeVersion = "202102052302";
 
 	// ID/name of the plugin
 	plugin_info.pluginId = "portalhistoryflags";
