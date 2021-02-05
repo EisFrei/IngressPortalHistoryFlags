@@ -2,7 +2,7 @@
 // @id portalHistoryFlags
 // @name IITC Plugin: Portal History Flags
 // @category Layers
-// @version 0.0.2
+// @version 0.0.3
 // @namespace	https://github.com/EisFrei/IngressPortalHistoryFlags
 // @downloadURL	https://github.com/EisFrei/IngressPortalHistoryFlags/raw/master/portalHistoryFlags.user.js
 // @homepageURL	https://github.com/EisFrei/IngressPortalHistoryFlags
