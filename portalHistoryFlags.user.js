@@ -2,7 +2,7 @@
 // @id portalHistoryFlags
 // @name IITC Plugin: Portal History Flags
 // @category Layer
-// @version 0.0.3
+// @version 0.0.4
 // @namespace	https://github.com/EisFrei/IngressPortalHistoryFlags
 // @downloadURL	https://github.com/EisFrei/IngressPortalHistoryFlags/raw/master/portalHistoryFlags.user.js
 // @homepageURL	https://github.com/EisFrei/IngressPortalHistoryFlags
@@ -194,7 +194,7 @@ function wrapper(plugin_info) {
 		window.addHook('portalAdded', thisPlugin.addToPortalMap);
 		window.addHook('portalRemoved', thisPlugin.removePortalFromMap);
         window.map.on('zoom', drawAllFlags);
-        $('#toolbox').append('<a onclick="window.plugin.PortalHistoryFlags.toggleDisplayMode()">History mode</a>');
+        $('#toolbox').append('<a onclick="window.plugin.PortalHistoryFlags.toggleDisplayMode()">Portal History</a>');
 	}
 	setup.info = plugin_info; //add the script info data to the function as a property
 	// if IITC has already booted, immediately run the 'setup' function
