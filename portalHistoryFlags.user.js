@@ -2,7 +2,7 @@
 // @id portalHistoryFlags
 // @name IITC Plugin: Portal History Flags
 // @category Layer
-// @version 0.0.2
+// @version 0.0.3
 // @namespace	https://github.com/EisFrei/IngressPortalHistoryFlags
 // @downloadURL	https://github.com/EisFrei/IngressPortalHistoryFlags/raw/master/portalHistoryFlags.user.js
 // @homepageURL	https://github.com/EisFrei/IngressPortalHistoryFlags
@@ -18,7 +18,6 @@ function wrapper(plugin_info) {
 	// Make sure that window.plugin exists. IITC defines it as a no-op function,
 	// and other plugins assume the same.
 	if (typeof window.plugin !== "function") window.plugin = function () {};
-
 	const KEY_SETTINGS = "plugin-portal-history-flags";
 
 	window.plugin.PortalHistoryFlags = function () {};
@@ -28,106 +27,174 @@ function wrapper(plugin_info) {
 	plugin_info.buildName = "PortalHistoryFlags";
 
 	// Datetime-derived version of the plugin
-	plugin_info.dateTimeVersion = "202102052258";
+	plugin_info.dateTimeVersion = "202102070043";
 
 	// ID/name of the plugin
 	plugin_info.pluginId = "portalhistoryflags";
 
 
-	function svgToIcon(str, x) {
+	function svgToIcon(str, s) {
 		const url = ("data:image/svg+xml," + encodeURIComponent(str)).replace(/#/g, '%23');
 		return new L.Icon({
 			iconUrl: url,
-			iconSize: [10, 10],
-			iconAnchor: [x, 20],
+			iconSize: [s, s],
+			iconAnchor: [s/2, s/2],
 		})
 	}
 
 	thisPlugin.removePortalFromMap = function (data) {
-		if (!data.portal._historyLayer) {
-			return;
-		}
-		thisPlugin.layerGroup.removeLayer(data.portal._historyLayer);
-	}
+        if (!data.portal._historyLayer) {
+            return;
+        }
+        thisPlugin.layerGroup.removeLayer(data.portal._historyLayer);
+    }
 
-	thisPlugin.addToPortalMap = function (data) {
+    thisPlugin.addToPortalMap = function (data) {
 		if (data.portal.options.ent.length === 3 && data.portal.options.ent[2].length >= 19 && data.portal.options.ent[2][18] > 0) {
-			data.portal.options.data.agentVisited = (data.portal.options.ent[2][18] & 0b1) === 1;
-			data.portal.options.data.agentCaptured = (data.portal.options.ent[2][18] & 0b10) === 2;
-			data.portal.options.data.agentScouted = (data.portal.options.ent[2][18] & 0b100) === 4;
+            data.portal.options.data.agentVisited = (data.portal.options.ent[2][18] & 0b1) === 1;
+            data.portal.options.data.agentCaptured = (data.portal.options.ent[2][18] & 0b10) === 2;
+            data.portal.options.data.agentScouted = (data.portal.options.ent[2][18] & 0b100) === 4;
 		}
 		var tileParams = window.getCurrentZoomTileParameters();
 		if (tileParams.level === 0) {
 			drawPortalFlags(data.portal);
 		} else {
-			thisPlugin.removePortalFromMap(data);
-		}
+            thisPlugin.removePortalFromMap(data);
+        }
 	}
 
-	thisPlugin.toggleDisplayMode = function () {
-		thisPlugin.settings.drawMissing = !thisPlugin.settings.drawMissing;
-		localStorage[KEY_SETTINGS] = JSON.stringify(thisPlugin.settings);
-		drawAllFlags();
-	}
+    thisPlugin.toggleDisplayMode = function() {
+        dialog({
+            html: `<div id="portal-history-settings">
+<div>
+  <select id="portal-history-settings--display-mode">
+    <option value="received" ${thisPlugin.settings.drawMissing?'':'selected'}>Show uniques received</option>
+    <option value="missing" ${thisPlugin.settings.drawMissing?'selected':''}>Show missing uniques</option>
+  </select>
+</div>
+<div><label style="color:#9538ff;"><input type="checkbox" id="portal-history-settings--show-visited" ${thisPlugin.settings.showVisited?'checked':''}> Show visited</label></div>
+<div><label style="color:#ff0000;"><input type="checkbox" id="portal-history-settings--show-captured" ${thisPlugin.settings.showCaptured?'checked':''}> Show captured</label></div>
+<div><label style="color:#ff9c00;"><input type="checkbox" id="portal-history-settings--show-scouted" ${thisPlugin.settings.showScouted?'checked':''}> Show scouted</label></div>
+</div>`,
+            title: 'Portal History Settings',
+            id: 'plugin-portal-history-flags',
+            width: 'auto',
+            closeCallback: function() {
+                const elMode = document.getElementById('portal-history-settings--display-mode');
+                const elVisited = document.getElementById('portal-history-settings--show-visited');
+                const elCaptured = document.getElementById('portal-history-settings--show-captured');
+                const elScouted = document.getElementById('portal-history-settings--show-scouted');
+
+                thisPlugin.settings.drawMissing = elMode.value === 'missing';
+                thisPlugin.settings.showVisited = elVisited.checked;
+                thisPlugin.settings.showCaptured = elCaptured.checked;
+                thisPlugin.settings.showScouted = elScouted.checked;
+
+                localStorage[KEY_SETTINGS] = JSON.stringify(thisPlugin.settings);
+                createIcons();
+                drawAllFlags();
+            }
+        });
+    }
 
 	function drawPortalFlags(portal) {
-		/*if (portal._historyLayer) {
-		    portal._historyLayer.addTo(thisPlugin.layerGroup);
-		    return;
-		}*/
+        /*if (portal._historyLayer) {
+            portal._historyLayer.addTo(thisPlugin.layerGroup);
+            return;
+        }*/
 
-		const drawMissing = thisPlugin.settings.drawMissing;
-		portal._historyLayer = new L.LayerGroup();
+        const drawMissing = thisPlugin.settings.drawMissing;
+        portal._historyLayer = new L.LayerGroup();
 		if (drawMissing && !portal.options.data.agentVisited || !drawMissing && portal.options.data.agentVisited) {
 			L.marker(portal._latlng, {
-				icon: thisPlugin.iconVisited,
+				icon: thisPlugin.iconVisited[portal.options.level],
 				interactive: false,
 				keyboard: false,
 			}).addTo(portal._historyLayer);
 		}
-		if (drawMissing && !portal.options.data.agentCaptured || !drawMissing && portal.options.data.agentCaptured) {
+        if (drawMissing && !portal.options.data.agentCaptured || !drawMissing && portal.options.data.agentCaptured) {
 			L.marker(portal._latlng, {
-				icon: thisPlugin.iconCaptured,
+				icon: thisPlugin.iconCaptured[portal.options.level],
 				interactive: false,
 				keyboard: false,
 			}).addTo(portal._historyLayer);
 		}
 		if (drawMissing && !portal.options.data.agentScouted || !drawMissing && portal.options.data.agentScouted) {
 			L.marker(portal._latlng, {
-				icon: thisPlugin.iconScouted,
+				icon: thisPlugin.iconScouted[portal.options.level],
 				interactive: false,
 				keyboard: false,
 			}).addTo(portal._historyLayer);
 		}
-		portal._historyLayer.addTo(thisPlugin.layerGroup);
+        portal._historyLayer.addTo(thisPlugin.layerGroup);
 	}
 
 	function drawAllFlags() {
 		thisPlugin.layerGroup.clearLayers();
-		for (let id in window.portals) {
-			drawPortalFlags(window.portals[id]);
+
+  		var tileParams = window.getCurrentZoomTileParameters();
+		if (tileParams.level !== 0) {
+            return;
 		}
-	}
+
+        for (let id in window.portals) {
+            drawPortalFlags(window.portals[id]);
+        }
+    }
+
+    function getSVGString(size, color) {
+        return `<svg width="${(size+4)}" height="${(size+4)}" xmlns="http://www.w3.org/2000/svg"><circle stroke="${color}" stroke-width="4" fill="transparent" cx="${(size+4)/2}" cy="${(size+4)/2}" r="${(size/2)}"/></svg>`;
+    }
+
+    function createIcons() {
+        var LEVEL_TO_RADIUS = [7, 7, 7, 7, 8, 8, 9,10,11];
+        thisPlugin.iconCaptured = {};
+        thisPlugin.iconVisited = {};
+        thisPlugin.iconScouted = {};
+        LEVEL_TO_RADIUS.forEach((el, idx) => {
+            let size = el * 2 + 8;
+            if (thisPlugin.settings.showVisited) {
+                thisPlugin.iconVisited[idx] = svgToIcon(getSVGString(size, '#9538ff'), size+4);
+                size += 7;
+            } else {
+                thisPlugin.iconVisited[idx] = svgToIcon(getSVGString(size, 'transparent'), size+4);
+            }
+
+            if (thisPlugin.settings.showCaptured) {
+                thisPlugin.iconCaptured[idx] = svgToIcon(getSVGString(size, '#ff0000'), size+4);
+                size += 7;
+            } else {
+                thisPlugin.iconCaptured[idx] = svgToIcon(getSVGString(size, 'transparent'), size+4);
+            }
+
+            if (thisPlugin.settings.showScouted) {
+                thisPlugin.iconScouted[idx] = svgToIcon(getSVGString(size, '#ff9c00'), size+4);
+            } else {
+                thisPlugin.iconScouted[idx] = svgToIcon(getSVGString(size, 'transparent'), size+4);
+            }
+        });
+    }
 
 	function setup() {
-		try {
-			thisPlugin.settings = JSON.parse(localStorage[KEY_SETTINGS]);
-		} catch (e) {
-			thisPlugin.settings = {
-				drawMissing: false,
-			};
-		}
+        try {
+            thisPlugin.settings = JSON.parse(localStorage[KEY_SETTINGS]);
+        } catch(e) {
+            thisPlugin.settings = {
+                drawMissing: false,
+                showVisited: true,
+                showCaptured: true,
+                showScouted: false,
+            };
+        }
 
-		thisPlugin.iconVisited = svgToIcon('<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle fill="#9538ff" cx="50" cy="50" r="50"/></svg>', 15);
-		thisPlugin.iconCaptured = svgToIcon('<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle fill="#ff0000" cx="50" cy="50" r="50"/></svg>', 5);
-		thisPlugin.iconScouted = svgToIcon('<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle fill="#ff9c00" cx="50" cy="50" r="50"/></svg>', -5);
-
+        createIcons();
 		thisPlugin.layerGroup = new L.LayerGroup();
 		window.addLayerGroup('Portal History', thisPlugin.layerGroup, false);
 
 		window.addHook('portalAdded', thisPlugin.addToPortalMap);
 		window.addHook('portalRemoved', thisPlugin.removePortalFromMap);
-		$('#toolbox').append('<a onclick="window.plugin.PortalHistoryFlags.toggleDisplayMode()">History mode</a>');
+        window.map.on('zoom', drawAllFlags);
+        $('#toolbox').append('<a onclick="window.plugin.PortalHistoryFlags.toggleDisplayMode()">History mode</a>');
 	}
 	setup.info = plugin_info; //add the script info data to the function as a property
 	// if IITC has already booted, immediately run the 'setup' function
