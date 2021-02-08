@@ -55,8 +55,8 @@ function wrapper(plugin_info) {
             data.portal.options.data.agentCaptured = (data.portal.options.ent[2][18] & 0b10) === 2;
             data.portal.options.data.agentScouted = (data.portal.options.ent[2][18] & 0b100) === 4;
 		}
-        //IITC.me support: getCurrentZoomTileParameters is iitc.app only; iitc.me function is: getMapZoomTileParameters
-        var tileParams = window.getCurrentZoomTileParameters ? window.getCurrentZoomTileParameters() : window.getMapZoomTileParameters();
+		//IITC.me support: getCurrentZoomTileParameters is iitc.app only; iitc.me function is: getMapZoomTileParameters
+		var tileParams = window.getCurrentZoomTileParameters ? window.getCurrentZoomTileParameters() : window.getMapZoomTileParameters();
 		if (tileParams.level === 0) {
 			drawPortalFlags(data.portal);
 		} else {
@@ -133,8 +133,8 @@ function wrapper(plugin_info) {
 	function drawAllFlags() {
 		thisPlugin.layerGroup.clearLayers();
 
-        //IITC.me support: getCurrentZoomTileParameters is iitc.app only; iitc.me function is: getMapZoomTileParameters
-        var tileParams = window.getCurrentZoomTileParameters ? window.getCurrentZoomTileParameters() : window.getMapZoomTileParameters();
+		//IITC.me support: getCurrentZoomTileParameters is iitc.app only; iitc.me function is: getMapZoomTileParameters
+		var tileParams = window.getCurrentZoomTileParameters ? window.getCurrentZoomTileParameters() : window.getMapZoomTileParameters();
 		if (tileParams.level !== 0) {
             return;
 		}
