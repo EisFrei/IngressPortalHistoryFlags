@@ -2,7 +2,7 @@
 // @id portalHistoryFlags
 // @name IITC Plugin: Portal History Flags
 // @category Layer
-// @version 0.0.5
+// @version 0.0.6
 // @namespace	https://github.com/EisFrei/IngressPortalHistoryFlags
 // @downloadURL	https://github.com/EisFrei/IngressPortalHistoryFlags/raw/main/portalHistoryFlags.user.js
 // @homepageURL	https://github.com/EisFrei/IngressPortalHistoryFlags
@@ -55,7 +55,8 @@ function wrapper(plugin_info) {
             data.portal.options.data.agentCaptured = (data.portal.options.ent[2][18] & 0b10) === 2;
             data.portal.options.data.agentScouted = (data.portal.options.ent[2][18] & 0b100) === 4;
 		}
-		var tileParams = window.getCurrentZoomTileParameters();
+		//IITC.me support: getCurrentZoomTileParameters is iitc.app only; iitc.me function is: getMapZoomTileParameters
+		var tileParams = window.getCurrentZoomTileParameters ? window.getCurrentZoomTileParameters() : window.getMapZoomTileParameters();
 		if (tileParams.level === 0) {
 			drawPortalFlags(data.portal);
 		} else {
@@ -132,7 +133,8 @@ function wrapper(plugin_info) {
 	function drawAllFlags() {
 		thisPlugin.layerGroup.clearLayers();
 
-  		var tileParams = window.getCurrentZoomTileParameters();
+		//IITC.me support: getCurrentZoomTileParameters is iitc.app only; iitc.me function is: getMapZoomTileParameters
+		var tileParams = window.getCurrentZoomTileParameters ? window.getCurrentZoomTileParameters() : window.getMapZoomTileParameters();
 		if (tileParams.level !== 0) {
             return;
 		}
