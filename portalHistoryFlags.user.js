@@ -2,7 +2,7 @@
 // @id portalHistoryFlags
 // @name IITC Plugin: Portal History Flags
 // @category Layer
-// @version 0.0.6
+// @version 0.0.7
 // @namespace	https://github.com/EisFrei/IngressPortalHistoryFlags
 // @downloadURL	https://github.com/EisFrei/IngressPortalHistoryFlags/raw/main/portalHistoryFlags.user.js
 // @homepageURL	https://github.com/EisFrei/IngressPortalHistoryFlags
@@ -39,6 +39,7 @@ function wrapper(plugin_info) {
 			iconUrl: url,
 			iconSize: [s, s],
 			iconAnchor: [s/2, s/2],
+			className: 'no-pointer-events',  //allows users to click on portal under the unique marker
 		})
 	}
 
