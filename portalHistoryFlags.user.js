@@ -2,7 +2,7 @@
 // @id portalHistoryFlags
 // @name IITC Plugin: Portal History Flags
 // @category Layer
-// @version 0.0.8
+// @version 0.0.9
 // @namespace	https://github.com/EisFrei/IngressPortalHistoryFlags
 // @downloadURL	https://github.com/EisFrei/IngressPortalHistoryFlags/raw/main/portalHistoryFlags.user.js
 // @homepageURL	https://github.com/EisFrei/IngressPortalHistoryFlags
@@ -147,8 +147,9 @@ function wrapper(plugin_info) {
 
 	function getSVGString(size, color, parts, offset) {
 		const circumference = size * Math.PI;
-		const arcOffset = circumference / parts * offset;
-		return `<svg width="${(size+4)}" height="${(size+4)}" xmlns="http://www.w3.org/2000/svg"><circle stroke="${color}" stroke-width="4" fill="transparent" cx="${(size+4)/2}" cy="${(size+4)/2}" r="${(size/2)}" stroke-dasharray="${circumference}" stroke-dashoffset="${arcOffset}" /></svg>`;
+		const arcOffset = circumference / parts * (parts - 1);
+		const rotate = 360 / parts * offset;
+		return `<svg width="${(size+4)}" height="${(size+4)}" xmlns="http://www.w3.org/2000/svg"><circle stroke="${color}" stroke-width="4" fill="transparent" cx="${(size+4)/2}" cy="${(size+4)/2}" r="${(size/2)}" stroke-dasharray="${circumference}" stroke-dashoffset="${arcOffset}" transform="rotate(${rotate}, ${((size+4)/2)}, ${((size+4)/2)})" /></svg>`;
 	}
 
 	function createIcons() {
