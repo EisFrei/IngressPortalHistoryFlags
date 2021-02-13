@@ -2,9 +2,10 @@
 // @id portalHistoryFlags
 // @name IITC Plugin: Portal History Flags
 // @category Layer
-// @version 0.0.9
+// @version 0.0.10
 // @namespace	https://github.com/EisFrei/IngressPortalHistoryFlags
 // @downloadURL	https://github.com/EisFrei/IngressPortalHistoryFlags/raw/main/portalHistoryFlags.user.js
+// @updateURL	https://github.com/EisFrei/IngressPortalHistoryFlags/raw/main/portalHistoryFlags.user.js
 // @homepageURL	https://github.com/EisFrei/IngressPortalHistoryFlags
 // @description Shows Visited/Captured/Scouted status above portal markers
 // @author EisFrei
